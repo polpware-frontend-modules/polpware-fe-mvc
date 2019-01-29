@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs'), require('rxjs/operators'), require('@polpware/fe-dependencies'), require('@polpware/fe-utilities'), require('polpware-tinymce-tailor/src/util/Class')) :
-    typeof define === 'function' && define.amd ? define('@polpware/fe-mvc', ['exports', 'rxjs', 'rxjs/operators', '@polpware/fe-dependencies', '@polpware/fe-utilities', 'polpware-tinymce-tailor/src/util/Class'], factory) :
-    (factory((global.polpware = global.polpware || {}, global.polpware['fe-mvc'] = {}),global.rxjs,global.rxjs.operators,global.dependencies,global.feUtilities,global['polpware-tinymce-tailor/src/util/Class']));
-}(this, (function (exports,rxjs,operators,dependencies,feUtilities,ClassBuilder) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs'), require('rxjs/operators'), require('@polpware/fe-utilities'), require('@polpware/fe-dependencies')) :
+    typeof define === 'function' && define.amd ? define('@polpware/fe-mvc', ['exports', 'rxjs', 'rxjs/operators', '@polpware/fe-utilities', '@polpware/fe-dependencies'], factory) :
+    (factory((global.polpware = global.polpware || {}, global.polpware['fe-mvc'] = {}),global.rxjs,global.rxjs.operators,global.feUtilities,global.dependencies));
+}(this, (function (exports,rxjs,operators,feUtilities,dependencies) { 'use strict';
 
     /**
      * @fileoverview added by tsickle
@@ -101,6 +101,8 @@
      * @fileoverview added by tsickle
      * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
+    /** @type {?} */
+    var ClassBuilder = dependencies.Class;
     /** @type {?} */
     var _$1 = dependencies.underscore;
     /** @type {?} */
@@ -945,7 +947,9 @@
      * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     /** @type {?} */
-    var ListControllerCtor = ClassBuilder.extend({
+    var ClassBuilder$1 = dependencies.Class;
+    /** @type {?} */
+    var ListControllerCtor = ClassBuilder$1.extend({
         Defaults: {
             MediatorCtor: null
         },

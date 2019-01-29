@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;mediators/rxjs-powered-writable-abstract-list&quot; | Polpware typescript mvc 3.0.1</title>
+	<title>&quot;mediators/rxjs-powered-writable-abstract-list&quot; | Polpware typescript mvc 3.0.2</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Polpware typescript mvc 3.0.1</a>
+					<a href="../index.html" class="title">Polpware typescript mvc 3.0.2</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -99,7 +99,7 @@
 					<div class="tsd-signature tsd-kind-icon">Rxjs<wbr>Powered<wbr>Writable<wbr>List<wbr>Mediator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;WritableListMediator.extend({Properties: &#x27;globalSubr, emitEventDelay&#x27;,init: function(settings: IWritableListMediatorCtorOptions) {const self: IRxjsPoweredDirContentMediatorDev &#x3D; this;self._super(settings);self._globalSubr &#x3D; null;self._emitEventDelay &#x3D; 1000;},/*** Starts to listen to the change on the global provider.* It is usually used internally on setting up this mediator.* @param {Object} globalProvider*/startListeningGlobalProvider: function(globalProvider) {const self: IRxjsPoweredDirContentMediatorDev &#x3D; this;self._globalProvider &#x3D; globalProvider;const eventObserver &#x3D; fromEvent(globalProvider, &#x27;update&#x27;);const ctrlObserver &#x3D; eventObserver.pipe(debounceTime(self._emitEventDelay));self._globalSubr &#x3D; eventObserver.pipe(buffer(ctrlObserver),map((col) &#x3D;&gt; {const x &#x3D; mergeArgs(col);return x;})).subscribe(args &#x3D;&gt; {self.onGlobalProviderUpdate.apply(self, [null, args]);});},/*** Stops listening to the change on the global provider.* It is usally used on the tearing down this mediator.*/stopListeningGlobalProvider: function() {const self: IRxjsPoweredDirContentMediatorDev &#x3D; this;const globalProvider &#x3D; self._globalProvider;if (self._globalSubr) {self._globalSubr.unsubscribe();self._globalSubr &#x3D; null;}}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/polpware/polpware-fe-mvc/blob/8004508/projects/polpware/fe-mvc/src/lib/mediators/rxjs-powered-writable-abstract-list.ts#L58">mediators/rxjs-powered-writable-abstract-list.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/polpware/polpware-fe-mvc/blob/a30558f/projects/polpware/fe-mvc/src/lib/mediators/rxjs-powered-writable-abstract-list.ts#L58">mediators/rxjs-powered-writable-abstract-list.ts:58</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -109,7 +109,7 @@
 					<div class="tsd-signature tsd-kind-icon">_<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;hInterface.underscore</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/polpware/polpware-fe-mvc/blob/8004508/projects/polpware/fe-mvc/src/lib/mediators/rxjs-powered-writable-abstract-list.ts#L15">mediators/rxjs-powered-writable-abstract-list.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/polpware/polpware-fe-mvc/blob/a30558f/projects/polpware/fe-mvc/src/lib/mediators/rxjs-powered-writable-abstract-list.ts#L15">mediators/rxjs-powered-writable-abstract-list.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -126,7 +126,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/polpware/polpware-fe-mvc/blob/8004508/projects/polpware/fe-mvc/src/lib/mediators/rxjs-powered-writable-abstract-list.ts#L28">mediators/rxjs-powered-writable-abstract-list.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/polpware/polpware-fe-mvc/blob/a30558f/projects/polpware/fe-mvc/src/lib/mediators/rxjs-powered-writable-abstract-list.ts#L28">mediators/rxjs-powered-writable-abstract-list.ts:28</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>

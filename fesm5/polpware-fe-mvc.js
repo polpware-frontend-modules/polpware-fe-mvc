@@ -1,8 +1,7 @@
 import { fromEvent } from 'rxjs';
 import { debounceTime, buffer, map } from 'rxjs/operators';
-import { underscore, backbone } from '@polpware/fe-dependencies';
 import { lift, tojQueryDeferred, pushArray } from '@polpware/fe-utilities';
-import { extend } from 'polpware-tinymce-tailor/src/util/Class';
+import { underscore, Class, backbone } from '@polpware/fe-dependencies';
 
 /**
  * @fileoverview added by tsickle
@@ -102,9 +101,11 @@ var noopViewInstance = {
  * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /** @type {?} */
+var ClassBuilder = Class;
+/** @type {?} */
 var _$1 = underscore;
 /** @type {?} */
-var ListMediator = extend({
+var ListMediator = ClassBuilder.extend({
     Properties: 'dataProvider,dataParams,deepCopy,useModel,enableRefresh,enableInfinite,onUpdateView,viewInstance',
     init: function (settings) {
         /** @type {?} */
@@ -950,7 +951,9 @@ var RxjsPoweredWritableListMediator = WritableListMediator.extend({
  * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 /** @type {?} */
-var ListControllerCtor = extend({
+var ClassBuilder$1 = Class;
+/** @type {?} */
+var ListControllerCtor = ClassBuilder$1.extend({
     Defaults: {
         MediatorCtor: null
     },
