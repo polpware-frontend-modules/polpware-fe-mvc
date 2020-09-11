@@ -1,17 +1,10 @@
+import { underscore, Class, backbone as backbone$1 } from '@polpware/fe-dependencies';
+import { tojQueryDeferred, lift, pushArray } from '@polpware/fe-utilities';
 import { fromEvent } from 'rxjs';
 import { debounceTime, buffer, map } from 'rxjs/operators';
-import { lift, tojQueryDeferred, pushArray } from '@polpware/fe-utilities';
-import { underscore, Class, backbone } from '@polpware/fe-dependencies';
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/** @type {?} */
 const _ = underscore;
-/** @type {?} */
 const noop = _.noop;
-/** @type {?} */
 const noopViewInstance = {
     $data: {
         init: noop,
@@ -55,10 +48,12 @@ const noopViewInstance = {
     $navBar: {
         /**
          * Get current state
+         * @returns {}
          */
         getState: noop,
         /**
          * Set state
+         * @param {Boolean} s
          */
         setState: noop
     },
@@ -97,18 +92,22 @@ const noopViewInstance = {
 };
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @fileOverview
+ * An mediator (named after the mediator pattern)
+ * which coordinates views and controllers.
+ * We support the following use cases:
+ * 1. A page is first time loaded and then rendered
+ * 2. A page is refreshed by pulling down
+ * 3. A page is rendered with more data
+ * 4. A page is updated after some state has changed
+ *
+ * Note that this is an sbtract class; you cannot create an instance of it.
  */
-/** @type {?} */
 const ClassBuilder = Class;
-/** @type {?} */
 const _$1 = underscore;
-/** @type {?} */
 const ListMediator = ClassBuilder.extend({
     Properties: 'dataProvider,dataParams,deepCopy,useModel,enableRefresh,enableInfinite,onUpdateView,viewInstance',
     init: function (settings) {
-        /** @type {?} */
         const self = this;
         self._settings = settings;
         self._viewInstance = noopViewInstance;
@@ -123,9 +122,7 @@ const ListMediator = ClassBuilder.extend({
         self._isLoadingData = false;
     },
     generateItemsInternal: function (collection) {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const newData = [];
         if (self._useModel) {
             collection.forEach(function (item) {
@@ -149,11 +146,10 @@ const ListMediator = ClassBuilder.extend({
      * Note that we support all kinds of data providers, backbone
      * or something similar backbone.
      * Moreover, this method may be overriden.
+     * @returns {Array}
      */
     safelyReadDataProvider: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         let models;
         if (self._dataProvider.models) {
             models = self._dataProvider.models;
@@ -170,15 +166,13 @@ const ListMediator = ClassBuilder.extend({
      * Generates the items for the view
      * Note that we only perform the checking in this method;
      * it is Not necessary to peform this kind of checking in other overriden generateItems.
+     * @param {Boolean} async
+     * @returns {}
      */
     generateItems: function (async) {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const $data = self._viewInstance.$data;
-        /** @type {?} */
         const models = self.safelyReadDataProvider();
-        /** @type {?} */
         const newData = self.generateItemsInternal(models);
         // newData is ready
         if (async === true) {
@@ -202,20 +196,18 @@ const ListMediator = ClassBuilder.extend({
      * Load the first page of data from the server,
      * without any loading indicator;
      * This method is used internally.
+     * @function loadInitData
+     * @returns {Promise}
      */
     loadInitData: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const dataProvider = self._dataProvider;
         // We must reset data beforehand
         dataProvider.reset();
         // There are side effects if a parameter is passed in get*page
         // Therefore, we need to clone a new copy of this parameter
         self._isLoadingData = true;
-        /** @type {?} */
         const dataParams = self._dataParams;
-        /** @type {?} */
         let promise = dataProvider.getFirstPage({ data: _$1.extend({}, dataParams) });
         promise = tojQueryDeferred(promise);
         promise.always(function () {
@@ -223,7 +215,6 @@ const ListMediator = ClassBuilder.extend({
             self._isLoadingData = false;
         });
         return promise.then(function () {
-            /** @type {?} */
             const $data = self._viewInstance.$data;
             $data.clean();
             $data.hasMoreData(dataProvider.hasNextPage());
@@ -234,11 +225,11 @@ const ListMediator = ClassBuilder.extend({
     /**
      * Render data without any loading operations. By default, this is invoked
      * in the context of non-async mode.
+     * @param {Boolean} async
+     * @function renderData
      */
     renderData: function (async) {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const $data = self._viewInstance.$data;
         $data.clean();
         $data.hasMoreData(self._dataProvider.hasNextPage());
@@ -250,20 +241,16 @@ const ListMediator = ClassBuilder.extend({
      * indicator at the end.
      * @param isProgramatic {Boolean} Indicates if this invocation
      * is due to an internal call, without user interaction.
+     * @function refresh
      */
     refresh: function (isProgramatic) {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const $data = self._viewInstance.$data;
-        /** @type {?} */
         const $refresher = self._viewInstance.$refresher;
         $data.hasMoreData(true);
         // Refresh loader
         $refresher.show(isProgramatic);
-        /** @type {?} */
         const prms = self.loadInitData();
-        /** @type {?} */
         const anotherP = tojQueryDeferred(prms);
         return anotherP.always(function () {
             $refresher.hide(isProgramatic);
@@ -273,17 +260,13 @@ const ListMediator = ClassBuilder.extend({
      * Loads more data as the result of scrolling down.
      * It assumes that the user has scroll down enough, thus resetting the loading more
      * indicator at the end.
+     * @function loadMore
      */
     loadMore: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const dataProvider = self._dataProvider;
-        /** @type {?} */
         const dataParams = self._dataParams;
-        /** @type {?} */
         const $data = self._viewInstance.$data;
-        /** @type {?} */
         const $moreLoader = self._viewInstance.$moreLoader;
         // loadMore may be issued before init
         if (self._isInit) {
@@ -305,7 +288,6 @@ const ListMediator = ClassBuilder.extend({
         // We must clone a copy dataParams, as there are side
         // effects in this parameter
         self._isLoadingData = true;
-        /** @type {?} */
         const prms = dataProvider.getNextPage({ data: _$1.extend({}, dataParams) }).then(function () {
             $data.hasMoreData(dataProvider.hasNextPage());
             self.generateItems(true /* async */);
@@ -314,7 +296,6 @@ const ListMediator = ClassBuilder.extend({
         }, function () {
             self._isLoadingData = false;
         });
-        /** @type {?} */
         const anotherP = tojQueryDeferred(prms);
         return anotherP.always(function () {
             $moreLoader.hide();
@@ -323,9 +304,10 @@ const ListMediator = ClassBuilder.extend({
     /**
      * Check if the context for the data provider has changed, for
      * the purpose of deciding if we need to reload data.
+     * @function stateChanged
+     * @returns {Boolean}
      */
     stateChanged: function () {
-        /** @type {?} */
         const stateContext = this._stateContext;
         if (stateContext.enableSearch === true) {
             return stateContext.searchModel.isConfirmed() && stateContext.searchModel.hashCode() !== stateContext.searchCriteria.hashCode;
@@ -334,15 +316,12 @@ const ListMediator = ClassBuilder.extend({
     },
     /**
      * Updates state and reload data, with loading indicator if set
+     * @function updateStateAndReload
      */
     updateStateAndReload: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const stateContext = self._stateContext;
-        /** @type {?} */
         const $data = self._viewInstance.$data;
-        /** @type {?} */
         const $loader = self._viewInstance.$loader;
         if (stateContext.enableSearch === true) {
             stateContext.searchCriteria = stateContext.searchModel.generateFilter();
@@ -350,9 +329,7 @@ const ListMediator = ClassBuilder.extend({
             $data.updateSearchCriteria(stateContext.searchCriteria);
         }
         $loader.show();
-        /** @type {?} */
         const prms = self.loadInitData();
-        /** @type {?} */
         const anotherP = tojQueryDeferred(prms);
         anotherP.always(function () {
             $loader.hide();
@@ -362,9 +339,9 @@ const ListMediator = ClassBuilder.extend({
      * Sets up context and hooks up data with view.
      * This method is only invoked once and should be one of the steps following constructor.
      * In other words, it is part of a constructor.
+     * @param {Object} options
      */
     setUp: function (options) {
-        /** @type {?} */
         const self = this;
         options = options || {};
         if (options.enableSearch) {
@@ -378,7 +355,6 @@ const ListMediator = ClassBuilder.extend({
             // Keep the search settings into the state context,
             // because these settings are used later for deciding if we
             // need to recompute data parameters or not
-            /** @type {?} */
             const searchSettings = options.searchSettings;
             self._stateContext.searchURL = searchSettings.searchURL;
             self._stateContext.searchModelGuid = searchSettings.searchModelGuid;
@@ -391,7 +367,6 @@ const ListMediator = ClassBuilder.extend({
      * A destructor.
      */
     tearDown: function () {
-        /** @type {?} */
         const self = this;
         if (self._dataProvider && self._dataProvider.off) {
             // Discard all listening
@@ -404,10 +379,8 @@ const ListMediator = ClassBuilder.extend({
      * Start to bind a view to this mediator.
      */
     attachView: function (viewInstance) {
-        /** @type {?} */
         const self = this;
         self._viewInstance = viewInstance;
-        /** @type {?} */
         const $data = self._viewInstance.$data;
         if (self._enableRefresh) {
             $data.setRefreshCallback(function () {
@@ -429,19 +402,14 @@ const ListMediator = ClassBuilder.extend({
         $data.init();
     },
     detachView: function () {
-        /** @type {?} */
         const self = this;
         self._viewInstance = noopViewInstance;
     },
     _defaultStartService: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const $loader = self._viewInstance.$loader;
         $loader.show();
-        /** @type {?} */
         const promise = self.loadInitData();
-        /** @type {?} */
         const anotherP = tojQueryDeferred(promise);
         anotherP.always(function () {
             $loader.hide();
@@ -451,12 +419,10 @@ const ListMediator = ClassBuilder.extend({
      * This method needs to be overrided.
      */
     startServiceImpl: function () {
-        /** @type {?} */
         const self = this;
         self._defaultStartService();
     },
     startService: function (viewInsance, fromCache) {
-        /** @type {?} */
         const self = this;
         self.attachView(viewInsance);
         if (fromCache === true) {
@@ -467,38 +433,27 @@ const ListMediator = ClassBuilder.extend({
         }
     },
     stopService: function () {
-        /** @type {?} */
         const self = this;
         self.detachView();
     }
 });
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/** @type {?} */
 const NgStoreListMediator = ListMediator.extend({
     init: function (settings) {
-        /** @type {?} */
         const self = this;
         self._super(settings);
         self._ngStore = null;
     },
     setNgStore: function (store) {
-        /** @type {?} */
         const self = this;
         self._ngStore = store;
     },
     getNgStore: function () {
-        /** @type {?} */
         const self = this;
         return self._ngStore;
     },
     safelyReadDataProvider: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const models = self._super();
         // Safely push these models into view level data provider
         self._ngStore.add(models);
@@ -512,15 +467,11 @@ const NgStoreListMediator = ListMediator.extend({
      * to be rendered.
      */
     renderData: function (async) {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const $data = self._viewInstance.$data;
         $data.clean();
         $data.hasMoreData(self._dataProvider.hasNextPage());
-        /** @type {?} */
         const subscription = self._ngStore.getState().subscribe(savedData => {
-            /** @type {?} */
             const newData = self.generateItemsInternal(savedData.items);
             if (async === true) {
                 $data.asyncPush(newData);
@@ -536,22 +487,19 @@ const NgStoreListMediator = ListMediator.extend({
 });
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * @fileOverview
+ * This module implements a list mediator that may quickly
+ * get updated on any operation in this list.
+ * E.g., add, remove, update
  */
-/** @type {?} */
 const _$2 = underscore;
-/** @type {?} */
-const backbone$1 = backbone;
-/** @type {?} */
+const backbone = backbone$1;
 const WritableListMediator = ListMediator.extend({
     Properties: 'viewLevelData,globalProvider',
     init: function (settings) {
-        /** @type {?} */
         const self = this;
         self._super(settings);
-        /** @type {?} */
-        const CollectionCtor = backbone$1.Collection.extend();
+        const CollectionCtor = backbone.Collection.extend();
         self._viewLevelData = new CollectionCtor();
         self._viewProviderListeners = {};
         self._globalProvider = settings.globalProvider || null;
@@ -560,10 +508,10 @@ const WritableListMediator = ListMediator.extend({
     },
     /**
      * A filter on the global data provider.
+     * @returns {Boolean}
      */
     globalProviderFilter: function (evtCtx, changeSet, rest) {
         /*jslint unparam:true */
-        /** @type {?} */
         const self = this;
         if (self._filterFlags.added &&
             changeSet.changes.added &&
@@ -589,12 +537,11 @@ const WritableListMediator = ListMediator.extend({
      * An internal method for listening to any change on the
      * global provider. Listening to the sole update event is
      * sufficient and efficent.
+     * @param {Object} args
      */
     onGlobalProviderUpdate: function () {
         /*jslint unparam:true */
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const args = arguments;
         // If we are loading data, the data we are receiving is
         // the result of the current loading behavior.
@@ -604,7 +551,6 @@ const WritableListMediator = ListMediator.extend({
             return;
         }
         // Shortcircuit
-        /** @type {?} */
         const changeSet = self.globalProviderFilter.apply(self, args);
         if (!changeSet) {
             return;
@@ -613,7 +559,6 @@ const WritableListMediator = ListMediator.extend({
         // method. However, the below view provider listener must be careful.
         // Changes
         if (changeSet.add) {
-            /** @type {?} */
             const candidate = _$2.filter(changeSet.changes.added, function (thisItem) {
                 return !_$2.some(self._viewLevelData.models, function (thatItem) {
                     return thisItem.id === thatItem.id;
@@ -621,7 +566,6 @@ const WritableListMediator = ListMediator.extend({
             });
             if (candidate.length > 0) {
                 _$2.each(candidate, function (v, k) {
-                    /** @type {?} */
                     const atIndex = self.findAtIndex(v);
                     if (atIndex !== -1) {
                         self._viewLevelData.add(v, { at: atIndex });
@@ -644,14 +588,12 @@ const WritableListMediator = ListMediator.extend({
      * An internal method for listening to the change on the view
      * data provider. Usually, such kind of listening shall be stopped
      * when there is no view binding to the current midiator list.
+     * @param {Object} args
      */
     onViewProviderUpdate: function (evtCtx, changeSet, rest) {
         /*jslint unparam:true */
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const $data = self._viewInstance.$data;
-        /** @type {?} */
         let newData;
         // Note that the interface of changeSet varies from
         // events to events in Backbone. We have to be very careful.
@@ -689,7 +631,6 @@ const WritableListMediator = ListMediator.extend({
      * So that we can clean up the view data.
      */
     loadInitData: function () {
-        /** @type {?} */
         const self = this;
         self._viewLevelData.reset();
         return self._super();
@@ -697,13 +638,11 @@ const WritableListMediator = ListMediator.extend({
     /**
      * Starts to listen to the change on the global provider.
      * It is usually used internally on setting up this mediator.
+     * @param {Object} globalProvider
      */
     startListeningGlobalProvider: function (globalProvider) {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const onUpdate = function () {
-            /** @type {?} */
             const args = arguments;
             // We have to schedule such update so that some other operations can
             // been completed first. E.g., getForeignModel should be set up.
@@ -722,11 +661,8 @@ const WritableListMediator = ListMediator.extend({
      * It is usally used on the tearing down this mediator.
      */
     stopListeningGlobalProvider: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const listeners = self._globalProviderListeners;
-        /** @type {?} */
         const globalProvider = self._globalProvider;
         for (const key in listeners) {
             if (listeners.hasOwnProperty(key)) {
@@ -739,9 +675,7 @@ const WritableListMediator = ListMediator.extend({
      * This method is invoked on binding a view to this mediator.
      */
     startListeningViewProvider: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const onUpdate = function (evtCtx, changeSet, rest) {
             self.onViewProviderUpdate(evtCtx, changeSet, rest);
         };
@@ -755,9 +689,7 @@ const WritableListMediator = ListMediator.extend({
      * This method is invoked on unbinding a view to this mediator.
      */
     stopListeningViewProvider: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const listeners = self._viewProviderListeners;
         for (const key in listeners) {
             if (listeners.hasOwnProperty(key)) {
@@ -771,11 +703,10 @@ const WritableListMediator = ListMediator.extend({
      * checking on generating data for the view module, so that no repeated
      * items may be generated.
      * Simply because, the data in the view level data is distinct.
+     * @returns {Array}
      */
     safelyReadDataProvider: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         let models = self._super();
         models = _$2.filter(models, function (elem) {
             return !_$2.some(self._viewLevelData.models, function (item) {
@@ -794,13 +725,10 @@ const WritableListMediator = ListMediator.extend({
      * to be rendered.
      */
     renderData: function (async) {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const $data = self._viewInstance.$data;
         $data.clean();
         $data.hasMoreData(self._dataProvider.hasNextPage());
-        /** @type {?} */
         const newData = self.generateItemsInternal(self._viewLevelData.models);
         if (async === true) {
             $data.asyncPush(newData);
@@ -811,9 +739,9 @@ const WritableListMediator = ListMediator.extend({
     },
     /**
      * Override
+     * @param {} options
      */
     setUp: function (options) {
-        /** @type {?} */
         const self = this;
         self._super(options);
         if (self._globalProvider) {
@@ -824,7 +752,6 @@ const WritableListMediator = ListMediator.extend({
      * Override
      */
     tearDown: function () {
-        /** @type {?} */
         const self = this;
         // Call super
         self._super();
@@ -840,7 +767,6 @@ const WritableListMediator = ListMediator.extend({
      * Override
      */
     attachView: function (viewInstance) {
-        /** @type {?} */
         const self = this;
         self._super(viewInstance);
         // Start to listen to changes on the view data provider.
@@ -850,28 +776,14 @@ const WritableListMediator = ListMediator.extend({
      * Override
      */
     detachView: function () {
-        /** @type {?} */
         const self = this;
         self._super();
         self.stopListeningViewProvider();
     }
 });
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/**
- * @param {?} data
- * @return {?}
- */
+const _$3 = underscore;
 function mergeArgs(data) {
-    /** @type {?} */
     const finalSet = {
         add: false,
         remove: false,
@@ -883,7 +795,6 @@ function mergeArgs(data) {
         }
     };
     data.forEach((elem) => {
-        /** @type {?} */
         const changeSet = elem[1];
         if (changeSet.changes.added && changeSet.changes.added.length > 0) {
             pushArray(finalSet.changes.added, changeSet.changes.added);
@@ -900,30 +811,25 @@ function mergeArgs(data) {
     });
     return finalSet;
 }
-/** @type {?} */
 const RxjsPoweredWritableListMediator = WritableListMediator.extend({
     Properties: 'globalSubr, emitEventDelay',
     init: function (settings) {
-        /** @type {?} */
         const self = this;
         self._super(settings);
         self._globalSubr = null;
         self._emitEventDelay = 1000;
     },
     /**
-     * Starts to listen to the change on the global provider.
-     * It is usually used internally on setting up this mediator.
-     */
+         * Starts to listen to the change on the global provider.
+         * It is usually used internally on setting up this mediator.
+         * @param {Object} globalProvider
+         */
     startListeningGlobalProvider: function (globalProvider) {
-        /** @type {?} */
         const self = this;
         self._globalProvider = globalProvider;
-        /** @type {?} */
         const eventObserver = fromEvent(globalProvider, 'update');
-        /** @type {?} */
         const ctrlObserver = eventObserver.pipe(debounceTime(self._emitEventDelay));
         self._globalSubr = eventObserver.pipe(buffer(ctrlObserver), map((col) => {
-            /** @type {?} */
             const x = mergeArgs(col);
             return x;
         })).subscribe(args => {
@@ -931,13 +837,11 @@ const RxjsPoweredWritableListMediator = WritableListMediator.extend({
         });
     },
     /**
-     * Stops listening to the change on the global provider.
-     * It is usally used on the tearing down this mediator.
-     */
+        * Stops listening to the change on the global provider.
+        * It is usally used on the tearing down this mediator.
+        */
     stopListeningGlobalProvider: function () {
-        /** @type {?} */
         const self = this;
-        /** @type {?} */
         const globalProvider = self._globalProvider;
         if (self._globalSubr) {
             self._globalSubr.unsubscribe();
@@ -946,13 +850,7 @@ const RxjsPoweredWritableListMediator = WritableListMediator.extend({
     }
 });
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-/** @type {?} */
 const ClassBuilder$1 = Class;
-/** @type {?} */
 const ListControllerCtor = ClassBuilder$1.extend({
     Defaults: {
         MediatorCtor: null
@@ -960,9 +858,9 @@ const ListControllerCtor = ClassBuilder$1.extend({
     Properties: 'mediator,settings',
     /**
      * Constructor
+     * @param {Object} settings
      */
     init: function (settings) {
-        /** @type {?} */
         var self = this;
         // We expect the following properties
         self._settings = settings;
@@ -971,14 +869,7 @@ const ListControllerCtor = ClassBuilder$1.extend({
         self._mediatorFromCache = !!self._mediator;
     },
     initMediator: function () {
-        /** @type {?} */
-        var self;
-        /** @type {?} */
-        var settings;
-        /** @type {?} */
-        var mediator;
-        /** @type {?} */
-        var MediatorCtor;
+        var self, settings, mediator, MediatorCtor;
         self = this;
         if (self._mediator) {
             return self;
@@ -995,12 +886,7 @@ const ListControllerCtor = ClassBuilder$1.extend({
         mediator.setUp();
     },
     start: function () {
-        /** @type {?} */
-        var self;
-        /** @type {?} */
-        var settings;
-        /** @type {?} */
-        var mediator;
+        var self, settings, mediator;
         self = this;
         settings = self._settings;
         mediator = self._mediator;
@@ -1018,15 +904,8 @@ const ListControllerCtor = ClassBuilder$1.extend({
 });
 
 /**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ * Generated bundle index. Do not edit.
  */
 
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-
-export { ListMediator, noopViewInstance, NgStoreListMediator, WritableListMediator, RxjsPoweredWritableListMediator, ListControllerCtor };
-
+export { ListControllerCtor, ListMediator, NgStoreListMediator, RxjsPoweredWritableListMediator, WritableListMediator, noopViewInstance };
 //# sourceMappingURL=polpware-fe-mvc.js.map

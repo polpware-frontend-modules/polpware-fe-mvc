@@ -1,18 +1,11 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('rxjs'), require('rxjs/operators'), require('@polpware/fe-utilities'), require('@polpware/fe-dependencies')) :
-    typeof define === 'function' && define.amd ? define('@polpware/fe-mvc', ['exports', 'rxjs', 'rxjs/operators', '@polpware/fe-utilities', '@polpware/fe-dependencies'], factory) :
-    (factory((global.polpware = global.polpware || {}, global.polpware['fe-mvc'] = {}),global.rxjs,global.rxjs.operators,global.feUtilities,global.dependencies));
-}(this, (function (exports,rxjs,operators,feUtilities,dependencies) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@polpware/fe-dependencies'), require('@polpware/fe-utilities'), require('rxjs'), require('rxjs/operators')) :
+    typeof define === 'function' && define.amd ? define('@polpware/fe-mvc', ['exports', '@polpware/fe-dependencies', '@polpware/fe-utilities', 'rxjs', 'rxjs/operators'], factory) :
+    (global = global || self, factory((global.polpware = global.polpware || {}, global.polpware['fe-mvc'] = {}), global.feDependencies, global.feUtilities, global.rxjs, global.rxjs.operators));
+}(this, (function (exports, feDependencies, feUtilities, rxjs, operators) { 'use strict';
 
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
-    /** @type {?} */
-    var _ = dependencies.underscore;
-    /** @type {?} */
+    var _ = feDependencies.underscore;
     var noop = _.noop;
-    /** @type {?} */
     var noopViewInstance = {
         $data: {
             init: noop,
@@ -56,10 +49,12 @@
         $navBar: {
             /**
              * Get current state
+             * @returns {}
              */
             getState: noop,
             /**
              * Set state
+             * @param {Boolean} s
              */
             setState: noop
         },
@@ -98,18 +93,22 @@
     };
 
     /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @fileOverview
+     * An mediator (named after the mediator pattern)
+     * which coordinates views and controllers.
+     * We support the following use cases:
+     * 1. A page is first time loaded and then rendered
+     * 2. A page is refreshed by pulling down
+     * 3. A page is rendered with more data
+     * 4. A page is updated after some state has changed
+     *
+     * Note that this is an sbtract class; you cannot create an instance of it.
      */
-    /** @type {?} */
-    var ClassBuilder = dependencies.Class;
-    /** @type {?} */
-    var _$1 = dependencies.underscore;
-    /** @type {?} */
+    var ClassBuilder = feDependencies.Class;
+    var _$1 = feDependencies.underscore;
     var ListMediator = ClassBuilder.extend({
         Properties: 'dataProvider,dataParams,deepCopy,useModel,enableRefresh,enableInfinite,onUpdateView,viewInstance',
         init: function (settings) {
-            /** @type {?} */
             var self = this;
             self._settings = settings;
             self._viewInstance = noopViewInstance;
@@ -124,9 +123,7 @@
             self._isLoadingData = false;
         },
         generateItemsInternal: function (collection) {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var newData = [];
             if (self._useModel) {
                 collection.forEach(function (item) {
@@ -150,11 +147,10 @@
          * Note that we support all kinds of data providers, backbone
          * or something similar backbone.
          * Moreover, this method may be overriden.
+         * @returns {Array}
          */
         safelyReadDataProvider: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var models;
             if (self._dataProvider.models) {
                 models = self._dataProvider.models;
@@ -171,15 +167,13 @@
          * Generates the items for the view
          * Note that we only perform the checking in this method;
          * it is Not necessary to peform this kind of checking in other overriden generateItems.
+         * @param {Boolean} async
+         * @returns {}
          */
         generateItems: function (async) {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var $data = self._viewInstance.$data;
-            /** @type {?} */
             var models = self.safelyReadDataProvider();
-            /** @type {?} */
             var newData = self.generateItemsInternal(models);
             // newData is ready
             if (async === true) {
@@ -203,20 +197,18 @@
          * Load the first page of data from the server,
          * without any loading indicator;
          * This method is used internally.
+         * @function loadInitData
+         * @returns {Promise}
          */
         loadInitData: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var dataProvider = self._dataProvider;
             // We must reset data beforehand
             dataProvider.reset();
             // There are side effects if a parameter is passed in get*page
             // Therefore, we need to clone a new copy of this parameter
             self._isLoadingData = true;
-            /** @type {?} */
             var dataParams = self._dataParams;
-            /** @type {?} */
             var promise = dataProvider.getFirstPage({ data: _$1.extend({}, dataParams) });
             promise = feUtilities.tojQueryDeferred(promise);
             promise.always(function () {
@@ -224,7 +216,6 @@
                 self._isLoadingData = false;
             });
             return promise.then(function () {
-                /** @type {?} */
                 var $data = self._viewInstance.$data;
                 $data.clean();
                 $data.hasMoreData(dataProvider.hasNextPage());
@@ -235,11 +226,11 @@
         /**
          * Render data without any loading operations. By default, this is invoked
          * in the context of non-async mode.
+         * @param {Boolean} async
+         * @function renderData
          */
         renderData: function (async) {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var $data = self._viewInstance.$data;
             $data.clean();
             $data.hasMoreData(self._dataProvider.hasNextPage());
@@ -251,20 +242,16 @@
          * indicator at the end.
          * @param isProgramatic {Boolean} Indicates if this invocation
          * is due to an internal call, without user interaction.
+         * @function refresh
          */
         refresh: function (isProgramatic) {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var $data = self._viewInstance.$data;
-            /** @type {?} */
             var $refresher = self._viewInstance.$refresher;
             $data.hasMoreData(true);
             // Refresh loader
             $refresher.show(isProgramatic);
-            /** @type {?} */
             var prms = self.loadInitData();
-            /** @type {?} */
             var anotherP = feUtilities.tojQueryDeferred(prms);
             return anotherP.always(function () {
                 $refresher.hide(isProgramatic);
@@ -274,17 +261,13 @@
          * Loads more data as the result of scrolling down.
          * It assumes that the user has scroll down enough, thus resetting the loading more
          * indicator at the end.
+         * @function loadMore
          */
         loadMore: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var dataProvider = self._dataProvider;
-            /** @type {?} */
             var dataParams = self._dataParams;
-            /** @type {?} */
             var $data = self._viewInstance.$data;
-            /** @type {?} */
             var $moreLoader = self._viewInstance.$moreLoader;
             // loadMore may be issued before init
             if (self._isInit) {
@@ -306,7 +289,6 @@
             // We must clone a copy dataParams, as there are side
             // effects in this parameter
             self._isLoadingData = true;
-            /** @type {?} */
             var prms = dataProvider.getNextPage({ data: _$1.extend({}, dataParams) }).then(function () {
                 $data.hasMoreData(dataProvider.hasNextPage());
                 self.generateItems(true /* async */);
@@ -315,7 +297,6 @@
             }, function () {
                 self._isLoadingData = false;
             });
-            /** @type {?} */
             var anotherP = feUtilities.tojQueryDeferred(prms);
             return anotherP.always(function () {
                 $moreLoader.hide();
@@ -324,9 +305,10 @@
         /**
          * Check if the context for the data provider has changed, for
          * the purpose of deciding if we need to reload data.
+         * @function stateChanged
+         * @returns {Boolean}
          */
         stateChanged: function () {
-            /** @type {?} */
             var stateContext = this._stateContext;
             if (stateContext.enableSearch === true) {
                 return stateContext.searchModel.isConfirmed() && stateContext.searchModel.hashCode() !== stateContext.searchCriteria.hashCode;
@@ -335,15 +317,12 @@
         },
         /**
          * Updates state and reload data, with loading indicator if set
+         * @function updateStateAndReload
          */
         updateStateAndReload: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var stateContext = self._stateContext;
-            /** @type {?} */
             var $data = self._viewInstance.$data;
-            /** @type {?} */
             var $loader = self._viewInstance.$loader;
             if (stateContext.enableSearch === true) {
                 stateContext.searchCriteria = stateContext.searchModel.generateFilter();
@@ -351,9 +330,7 @@
                 $data.updateSearchCriteria(stateContext.searchCriteria);
             }
             $loader.show();
-            /** @type {?} */
             var prms = self.loadInitData();
-            /** @type {?} */
             var anotherP = feUtilities.tojQueryDeferred(prms);
             anotherP.always(function () {
                 $loader.hide();
@@ -363,9 +340,9 @@
          * Sets up context and hooks up data with view.
          * This method is only invoked once and should be one of the steps following constructor.
          * In other words, it is part of a constructor.
+         * @param {Object} options
          */
         setUp: function (options) {
-            /** @type {?} */
             var self = this;
             options = options || {};
             if (options.enableSearch) {
@@ -379,7 +356,6 @@
                 // Keep the search settings into the state context,
                 // because these settings are used later for deciding if we
                 // need to recompute data parameters or not
-                /** @type {?} */
                 var searchSettings = options.searchSettings;
                 self._stateContext.searchURL = searchSettings.searchURL;
                 self._stateContext.searchModelGuid = searchSettings.searchModelGuid;
@@ -392,7 +368,6 @@
          * A destructor.
          */
         tearDown: function () {
-            /** @type {?} */
             var self = this;
             if (self._dataProvider && self._dataProvider.off) {
                 // Discard all listening
@@ -405,10 +380,8 @@
          * Start to bind a view to this mediator.
          */
         attachView: function (viewInstance) {
-            /** @type {?} */
             var self = this;
             self._viewInstance = viewInstance;
-            /** @type {?} */
             var $data = self._viewInstance.$data;
             if (self._enableRefresh) {
                 $data.setRefreshCallback(function () {
@@ -430,19 +403,14 @@
             $data.init();
         },
         detachView: function () {
-            /** @type {?} */
             var self = this;
             self._viewInstance = noopViewInstance;
         },
         _defaultStartService: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var $loader = self._viewInstance.$loader;
             $loader.show();
-            /** @type {?} */
             var promise = self.loadInitData();
-            /** @type {?} */
             var anotherP = feUtilities.tojQueryDeferred(promise);
             anotherP.always(function () {
                 $loader.hide();
@@ -452,12 +420,10 @@
          * This method needs to be overrided.
          */
         startServiceImpl: function () {
-            /** @type {?} */
             var self = this;
             self._defaultStartService();
         },
         startService: function (viewInsance, fromCache) {
-            /** @type {?} */
             var self = this;
             self.attachView(viewInsance);
             if (fromCache === true) {
@@ -468,38 +434,27 @@
             }
         },
         stopService: function () {
-            /** @type {?} */
             var self = this;
             self.detachView();
         }
     });
 
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
-    /** @type {?} */
     var NgStoreListMediator = ListMediator.extend({
         init: function (settings) {
-            /** @type {?} */
             var self = this;
             self._super(settings);
             self._ngStore = null;
         },
         setNgStore: function (store) {
-            /** @type {?} */
             var self = this;
             self._ngStore = store;
         },
         getNgStore: function () {
-            /** @type {?} */
             var self = this;
             return self._ngStore;
         },
         safelyReadDataProvider: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var models = self._super();
             // Safely push these models into view level data provider
             self._ngStore.add(models);
@@ -513,15 +468,11 @@
          * to be rendered.
          */
         renderData: function (async) {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var $data = self._viewInstance.$data;
             $data.clean();
             $data.hasMoreData(self._dataProvider.hasNextPage());
-            /** @type {?} */
             var subscription = self._ngStore.getState().subscribe(function (savedData) {
-                /** @type {?} */
                 var newData = self.generateItemsInternal(savedData.items);
                 if (async === true) {
                     $data.asyncPush(newData);
@@ -537,21 +488,18 @@
     });
 
     /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @fileOverview
+     * This module implements a list mediator that may quickly
+     * get updated on any operation in this list.
+     * E.g., add, remove, update
      */
-    /** @type {?} */
-    var _$2 = dependencies.underscore;
-    /** @type {?} */
-    var backbone = dependencies.backbone;
-    /** @type {?} */
+    var _$2 = feDependencies.underscore;
+    var backbone = feDependencies.backbone;
     var WritableListMediator = ListMediator.extend({
         Properties: 'viewLevelData,globalProvider',
         init: function (settings) {
-            /** @type {?} */
             var self = this;
             self._super(settings);
-            /** @type {?} */
             var CollectionCtor = backbone.Collection.extend();
             self._viewLevelData = new CollectionCtor();
             self._viewProviderListeners = {};
@@ -561,10 +509,10 @@
         },
         /**
          * A filter on the global data provider.
+         * @returns {Boolean}
          */
         globalProviderFilter: function (evtCtx, changeSet, rest) {
             /*jslint unparam:true */
-            /** @type {?} */
             var self = this;
             if (self._filterFlags.added &&
                 changeSet.changes.added &&
@@ -590,12 +538,11 @@
          * An internal method for listening to any change on the
          * global provider. Listening to the sole update event is
          * sufficient and efficent.
+         * @param {Object} args
          */
         onGlobalProviderUpdate: function () {
             /*jslint unparam:true */
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var args = arguments;
             // If we are loading data, the data we are receiving is
             // the result of the current loading behavior.
@@ -605,7 +552,6 @@
                 return;
             }
             // Shortcircuit
-            /** @type {?} */
             var changeSet = self.globalProviderFilter.apply(self, args);
             if (!changeSet) {
                 return;
@@ -614,7 +560,6 @@
             // method. However, the below view provider listener must be careful.
             // Changes
             if (changeSet.add) {
-                /** @type {?} */
                 var candidate = _$2.filter(changeSet.changes.added, function (thisItem) {
                     return !_$2.some(self._viewLevelData.models, function (thatItem) {
                         return thisItem.id === thatItem.id;
@@ -622,7 +567,6 @@
                 });
                 if (candidate.length > 0) {
                     _$2.each(candidate, function (v, k) {
-                        /** @type {?} */
                         var atIndex = self.findAtIndex(v);
                         if (atIndex !== -1) {
                             self._viewLevelData.add(v, { at: atIndex });
@@ -645,14 +589,12 @@
          * An internal method for listening to the change on the view
          * data provider. Usually, such kind of listening shall be stopped
          * when there is no view binding to the current midiator list.
+         * @param {Object} args
          */
         onViewProviderUpdate: function (evtCtx, changeSet, rest) {
             /*jslint unparam:true */
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var $data = self._viewInstance.$data;
-            /** @type {?} */
             var newData;
             // Note that the interface of changeSet varies from
             // events to events in Backbone. We have to be very careful.
@@ -690,7 +632,6 @@
          * So that we can clean up the view data.
          */
         loadInitData: function () {
-            /** @type {?} */
             var self = this;
             self._viewLevelData.reset();
             return self._super();
@@ -698,13 +639,11 @@
         /**
          * Starts to listen to the change on the global provider.
          * It is usually used internally on setting up this mediator.
+         * @param {Object} globalProvider
          */
         startListeningGlobalProvider: function (globalProvider) {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var onUpdate = function () {
-                /** @type {?} */
                 var args = arguments;
                 // We have to schedule such update so that some other operations can
                 // been completed first. E.g., getForeignModel should be set up.
@@ -723,11 +662,8 @@
          * It is usally used on the tearing down this mediator.
          */
         stopListeningGlobalProvider: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var listeners = self._globalProviderListeners;
-            /** @type {?} */
             var globalProvider = self._globalProvider;
             for (var key in listeners) {
                 if (listeners.hasOwnProperty(key)) {
@@ -740,9 +676,7 @@
          * This method is invoked on binding a view to this mediator.
          */
         startListeningViewProvider: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var onUpdate = function (evtCtx, changeSet, rest) {
                 self.onViewProviderUpdate(evtCtx, changeSet, rest);
             };
@@ -756,9 +690,7 @@
          * This method is invoked on unbinding a view to this mediator.
          */
         stopListeningViewProvider: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var listeners = self._viewProviderListeners;
             for (var key in listeners) {
                 if (listeners.hasOwnProperty(key)) {
@@ -772,11 +704,10 @@
          * checking on generating data for the view module, so that no repeated
          * items may be generated.
          * Simply because, the data in the view level data is distinct.
+         * @returns {Array}
          */
         safelyReadDataProvider: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var models = self._super();
             models = _$2.filter(models, function (elem) {
                 return !_$2.some(self._viewLevelData.models, function (item) {
@@ -795,13 +726,10 @@
          * to be rendered.
          */
         renderData: function (async) {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var $data = self._viewInstance.$data;
             $data.clean();
             $data.hasMoreData(self._dataProvider.hasNextPage());
-            /** @type {?} */
             var newData = self.generateItemsInternal(self._viewLevelData.models);
             if (async === true) {
                 $data.asyncPush(newData);
@@ -812,9 +740,9 @@
         },
         /**
          * Override
+         * @param {} options
          */
         setUp: function (options) {
-            /** @type {?} */
             var self = this;
             self._super(options);
             if (self._globalProvider) {
@@ -825,7 +753,6 @@
          * Override
          */
         tearDown: function () {
-            /** @type {?} */
             var self = this;
             // Call super
             self._super();
@@ -841,7 +768,6 @@
          * Override
          */
         attachView: function (viewInstance) {
-            /** @type {?} */
             var self = this;
             self._super(viewInstance);
             // Start to listen to changes on the view data provider.
@@ -851,23 +777,14 @@
          * Override
          */
         detachView: function () {
-            /** @type {?} */
             var self = this;
             self._super();
             self.stopListeningViewProvider();
         }
     });
 
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
-    /**
-     * @param {?} data
-     * @return {?}
-     */
+    var _$3 = feDependencies.underscore;
     function mergeArgs(data) {
-        /** @type {?} */
         var finalSet = {
             add: false,
             remove: false,
@@ -879,7 +796,6 @@
             }
         };
         data.forEach(function (elem) {
-            /** @type {?} */
             var changeSet = elem[1];
             if (changeSet.changes.added && changeSet.changes.added.length > 0) {
                 feUtilities.pushArray(finalSet.changes.added, changeSet.changes.added);
@@ -896,30 +812,25 @@
         });
         return finalSet;
     }
-    /** @type {?} */
     var RxjsPoweredWritableListMediator = WritableListMediator.extend({
         Properties: 'globalSubr, emitEventDelay',
         init: function (settings) {
-            /** @type {?} */
             var self = this;
             self._super(settings);
             self._globalSubr = null;
             self._emitEventDelay = 1000;
         },
         /**
-         * Starts to listen to the change on the global provider.
-         * It is usually used internally on setting up this mediator.
-         */
+             * Starts to listen to the change on the global provider.
+             * It is usually used internally on setting up this mediator.
+             * @param {Object} globalProvider
+             */
         startListeningGlobalProvider: function (globalProvider) {
-            /** @type {?} */
             var self = this;
             self._globalProvider = globalProvider;
-            /** @type {?} */
             var eventObserver = rxjs.fromEvent(globalProvider, 'update');
-            /** @type {?} */
             var ctrlObserver = eventObserver.pipe(operators.debounceTime(self._emitEventDelay));
             self._globalSubr = eventObserver.pipe(operators.buffer(ctrlObserver), operators.map(function (col) {
-                /** @type {?} */
                 var x = mergeArgs(col);
                 return x;
             })).subscribe(function (args) {
@@ -927,13 +838,11 @@
             });
         },
         /**
-         * Stops listening to the change on the global provider.
-         * It is usally used on the tearing down this mediator.
-         */
+            * Stops listening to the change on the global provider.
+            * It is usally used on the tearing down this mediator.
+            */
         stopListeningGlobalProvider: function () {
-            /** @type {?} */
             var self = this;
-            /** @type {?} */
             var globalProvider = self._globalProvider;
             if (self._globalSubr) {
                 self._globalSubr.unsubscribe();
@@ -942,13 +851,7 @@
         }
     });
 
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
-    /** @type {?} */
-    var ClassBuilder$1 = dependencies.Class;
-    /** @type {?} */
+    var ClassBuilder$1 = feDependencies.Class;
     var ListControllerCtor = ClassBuilder$1.extend({
         Defaults: {
             MediatorCtor: null
@@ -956,9 +859,9 @@
         Properties: 'mediator,settings',
         /**
          * Constructor
+         * @param {Object} settings
          */
         init: function (settings) {
-            /** @type {?} */
             var self = this;
             // We expect the following properties
             self._settings = settings;
@@ -967,14 +870,7 @@
             self._mediatorFromCache = !!self._mediator;
         },
         initMediator: function () {
-            /** @type {?} */
-            var self;
-            /** @type {?} */
-            var settings;
-            /** @type {?} */
-            var mediator;
-            /** @type {?} */
-            var MediatorCtor;
+            var self, settings, mediator, MediatorCtor;
             self = this;
             if (self._mediator) {
                 return self;
@@ -991,12 +887,7 @@
             mediator.setUp();
         },
         start: function () {
-            /** @type {?} */
-            var self;
-            /** @type {?} */
-            var settings;
-            /** @type {?} */
-            var mediator;
+            var self, settings, mediator;
             self = this;
             settings = self._settings;
             mediator = self._mediator;
@@ -1013,25 +904,14 @@
         }
     });
 
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
-
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
-
-    exports.ListMediator = ListMediator;
-    exports.noopViewInstance = noopViewInstance;
-    exports.NgStoreListMediator = NgStoreListMediator;
-    exports.WritableListMediator = WritableListMediator;
-    exports.RxjsPoweredWritableListMediator = RxjsPoweredWritableListMediator;
     exports.ListControllerCtor = ListControllerCtor;
+    exports.ListMediator = ListMediator;
+    exports.NgStoreListMediator = NgStoreListMediator;
+    exports.RxjsPoweredWritableListMediator = RxjsPoweredWritableListMediator;
+    exports.WritableListMediator = WritableListMediator;
+    exports.noopViewInstance = noopViewInstance;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
-
 //# sourceMappingURL=polpware-fe-mvc.umd.js.map
