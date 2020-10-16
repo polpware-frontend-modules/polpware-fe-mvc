@@ -271,7 +271,6 @@
             var $moreLoader = self._viewInstance.$moreLoader;
             // loadMore may be issued before init
             if (self._isInit) {
-                $moreLoader.hide();
                 return feUtilities.lift(true, null);
             }
             if (self._isLoadingData) {
@@ -282,7 +281,6 @@
             }
             if (!dataProvider.hasNextPage()) {
                 $data.hasMoreData(false);
-                $moreLoader.hide();
                 return feUtilities.lift(true, null);
             }
             $moreLoader.show();

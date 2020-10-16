@@ -270,7 +270,6 @@ const ListMediator = ClassBuilder.extend({
         const $moreLoader = self._viewInstance.$moreLoader;
         // loadMore may be issued before init
         if (self._isInit) {
-            $moreLoader.hide();
             return lift(true, null);
         }
         if (self._isLoadingData) {
@@ -281,7 +280,6 @@ const ListMediator = ClassBuilder.extend({
         }
         if (!dataProvider.hasNextPage()) {
             $data.hasMoreData(false);
-            $moreLoader.hide();
             return lift(true, null);
         }
         $moreLoader.show();
