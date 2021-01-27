@@ -1,11 +1,10 @@
 {
   "name": "@polpware/fe-mvc",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "peerDependencies": {
     "@angular/common": "^9.0.0",
     "@angular/core": "^9.0.0",
-    "@polpware/fe-data": "https://github.com/polpware-frontend-modules/polpware-fe-data.git",
-    "@polpware/fe-utilities": "https://github.com/polpware-frontend-modules/polpware-fe-utilities.git"
+    "@polpware/fe-data": "^9.0.0"
   },
   "main": "bundles/polpware-fe-mvc.umd.js",
   "module": "fesm5/polpware-fe-mvc.js",
