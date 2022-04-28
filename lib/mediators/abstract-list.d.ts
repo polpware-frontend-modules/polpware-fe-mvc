@@ -54,3 +54,4 @@ export interface IListMediatorDev extends IListMediatorPublic {
     startServiceImpl(): void;
 }
 export declare const ListMediator: any;
+//# sourceMappingURL=abstract-list.d.ts.map

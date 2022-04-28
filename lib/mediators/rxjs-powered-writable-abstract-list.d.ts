@@ -5,3 +5,4 @@ export interface IRxjsPoweredDirContentMediatorDev extends IWritableListMediator
     _globalSubr: Subscription;
 }
 export declare const RxjsPoweredWritableListMediator: any;
+//# sourceMappingURL=rxjs-powered-writable-abstract-list.d.ts.map

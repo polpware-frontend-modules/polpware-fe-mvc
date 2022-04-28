@@ -46,3 +46,4 @@ export interface IWritableListMediatorDev extends IListMediatorDev {
     findAtIndex(newModel: any): number;
 }
 export declare const WritableListMediator: any;
+//# sourceMappingURL=writable-abstract-list.d.ts.map

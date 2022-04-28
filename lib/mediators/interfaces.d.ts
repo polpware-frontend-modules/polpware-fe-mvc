@@ -83,3 +83,4 @@ export interface IViewInstance {
         goBack: any;
     };
 }
+//# sourceMappingURL=interfaces.d.ts.map

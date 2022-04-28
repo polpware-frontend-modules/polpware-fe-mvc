@@ -10,3 +10,4 @@ export interface INgStoreListMediatorDev extends IListMediatorDev {
     _super(value?: any): any;
 }
 export declare const NgStoreListMediator: any;
+//# sourceMappingURL=ngstore-abstract-list.d.ts.map
