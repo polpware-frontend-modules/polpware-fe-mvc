@@ -1,26 +1,26 @@
 {
   "name": "@polpware/fe-mvc",
-  "version": "13.0.0",
+  "version": "14.0.0",
   "dependencies": {
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "@angular/common": "^13.0.0",
-    "@angular/core": "^13.0.0",
-    "@polpware/fe-data": "^13.0.0"
+    "@angular/common": "^14.0.0",
+    "@angular/core": "^14.0.0",
+    "@polpware/fe-data": "^14.0.0"
   },
   "module": "fesm2015/polpware-fe-mvc.mjs",
   "es2020": "fesm2020/polpware-fe-mvc.mjs",
   "esm2020": "esm2020/polpware-fe-mvc.mjs",
   "fesm2020": "fesm2020/polpware-fe-mvc.mjs",
   "fesm2015": "fesm2015/polpware-fe-mvc.mjs",
-  "typings": "polpware-fe-mvc.d.ts",
+  "typings": "index.d.ts",
   "exports": {
     "./package.json": {
       "default": "./package.json"
     },
     ".": {
-      "types": "./polpware-fe-mvc.d.ts",
+      "types": "./index.d.ts",
       "esm2020": "./esm2020/polpware-fe-mvc.mjs",
       "es2020": "./fesm2020/polpware-fe-mvc.mjs",
       "es2015": "./fesm2015/polpware-fe-mvc.mjs",
