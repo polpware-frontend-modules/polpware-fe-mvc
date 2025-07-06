@@ -1,13 +1,13 @@
 {
   "name": "@polpware/fe-mvc",
-  "version": "16.0.0",
+  "version": "17.0.0",
   "dependencies": {
     "tslib": "^2.0.0"
   },
   "peerDependencies": {
-    "@angular/common": "^16.0.0",
-    "@angular/core": "^16.0.0",
-    "@polpware/fe-data": "^16.0.0"
+    "@angular/common": "^17.0.0",
+    "@angular/core": "^17.0.0",
+    "@polpware/fe-data": "^17.0.0"
   },
   "module": "fesm2022/polpware-fe-mvc.mjs",
   "typings": "index.d.ts",
