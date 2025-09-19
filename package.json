@@ -1,6 +1,6 @@
 {
   "name": "@polpware/fe-mvc",
-  "version": "19.0.0",
+  "version": "19.1.0",
   "dependencies": {
     "tslib": "^2.0.0"
   },
