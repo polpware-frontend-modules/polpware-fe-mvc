@@ -1,10 +1,11 @@
-import * as dependencies from '@polpware/fe-dependencies';
+import ClassBuilder from '@polpware/tinymce-tailor/api/util/Class';
 import { tojQueryDeferred, lift, pushArray } from '@polpware/fe-utilities';
+import { legacyLibs } from '@polpware/amd-bridge';
 import { fromEvent } from 'rxjs';
 import { debounceTime, buffer, map } from 'rxjs/operators';
 
-const _$3 = dependencies.underscore;
-const noop = _$3.noop;
+const _$2 = legacyLibs._;
+const noop = _$2.noop;
 const noopViewInstance = {
     $data: {
         init: noop,
@@ -103,9 +104,8 @@ const noopViewInstance = {
  *
  * Note that this is an sbtract class; you cannot create an instance of it.
  */
-const ClassBuilder$1 = dependencies.Class;
-const _$2 = dependencies.underscore;
-const ListMediator = ClassBuilder$1.extend({
+const _$1 = legacyLibs._;
+const ListMediator = ClassBuilder.extend({
     Properties: 'dataProvider,dataParams,deepCopy,useModel,enableRefresh,enableInfinite,onUpdateView,viewInstance',
     init: function (settings) {
         const self = this;
@@ -131,7 +131,7 @@ const ListMediator = ClassBuilder$1.extend({
         }
         else if (self._deepCopy) {
             collection.forEach(function (item) {
-                newData.push(_$2.extend({}, item.attributes));
+                newData.push(_$1.extend({}, item.attributes));
             });
         }
         else {
@@ -208,7 +208,7 @@ const ListMediator = ClassBuilder$1.extend({
         // Therefore, we need to clone a new copy of this parameter
         self._isLoadingData = true;
         const dataParams = self._dataParams;
-        let promise = dataProvider.getFirstPage({ data: _$2.extend({}, dataParams) });
+        let promise = dataProvider.getFirstPage({ data: _$1.extend({}, dataParams) });
         promise = tojQueryDeferred(promise);
         promise.always(function () {
             self._isInit = false;
@@ -286,7 +286,7 @@ const ListMediator = ClassBuilder$1.extend({
         // We must clone a copy dataParams, as there are side
         // effects in this parameter
         self._isLoadingData = true;
-        const prms = dataProvider.getNextPage({ data: _$2.extend({}, dataParams) }).then(function () {
+        const prms = dataProvider.getNextPage({ data: _$1.extend({}, dataParams) }).then(function () {
             $data.hasMoreData(dataProvider.hasNextPage());
             self.generateItems(true /* async */);
             // To ensure that isLoading happends very later, we have to put isLoading in two functions.
@@ -490,8 +490,8 @@ const NgStoreListMediator = ListMediator.extend({
  * get updated on any operation in this list.
  * E.g., add, remove, update
  */
-const _$1 = dependencies.underscore;
-const backbone = dependencies.backbone;
+const _ = legacyLibs._;
+const backbone = legacyLibs.Backbone;
 const WritableListMediator = ListMediator.extend({
     Properties: 'viewLevelData,globalProvider',
     init: function (settings) {
@@ -557,13 +557,13 @@ const WritableListMediator = ListMediator.extend({
         // method. However, the below view provider listener must be careful.
         // Changes
         if (changeSet.add) {
-            const candidate = _$1.filter(changeSet.changes.added, function (thisItem) {
-                return !_$1.some(self._viewLevelData.models, function (thatItem) {
+            const candidate = _.filter(changeSet.changes.added, function (thisItem) {
+                return !_.some(self._viewLevelData.models, function (thatItem) {
                     return thisItem.id === thatItem.id;
                 });
             });
             if (candidate.length > 0) {
-                _$1.each(candidate, function (v, k) {
+                _.each(candidate, function (v, k) {
                     const atIndex = self.findAtIndex(v);
                     if (atIndex !== -1) {
                         self._viewLevelData.add(v, { at: atIndex });
@@ -644,7 +644,7 @@ const WritableListMediator = ListMediator.extend({
             const args = arguments;
             // We have to schedule such update so that some other operations can
             // been completed first. E.g., getForeignModel should be set up.
-            _$1.defer(function () {
+            _.defer(function () {
                 self.onGlobalProviderUpdate.apply(self, args);
             });
         };
@@ -706,8 +706,8 @@ const WritableListMediator = ListMediator.extend({
     safelyReadDataProvider: function () {
         const self = this;
         let models = self._super();
-        models = _$1.filter(models, function (elem) {
-            return !_$1.some(self._viewLevelData.models, function (item) {
+        models = _.filter(models, function (elem) {
+            return !_.some(self._viewLevelData.models, function (item) {
                 return item.id === elem.id;
             });
         });
@@ -780,7 +780,6 @@ const WritableListMediator = ListMediator.extend({
     }
 });
 
-const _ = dependencies.underscore;
 function mergeArgs(data) {
     const finalSet = {
         add: false,
@@ -848,7 +847,6 @@ const RxjsPoweredWritableListMediator = WritableListMediator.extend({
     }
 });
 
-const ClassBuilder = dependencies.Class;
 const ListControllerCtor = ClassBuilder.extend({
     Defaults: {
         MediatorCtor: null
